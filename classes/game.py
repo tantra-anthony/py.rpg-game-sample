@@ -1,7 +1,7 @@
 import random
     
 class Person:
-    def __init__(self, hp, mp, atk, df, mag, items):
+    def __init__(self, name, hp, mp, atk, df, mag, items):
         self.maxhp = hp
         self.hp = hp
         self.maxmp = mp
@@ -12,6 +12,7 @@ class Person:
         self.mag = mag
         self.items = items
         self.actions = ['Attack', 'Magic', 'Items']
+        self.name = name
         
     def generate_damage(self):
         return random.randrange(self.atkl, self.atkh)
@@ -44,21 +45,108 @@ class Person:
 
     def choose_action(self):
         i = 1
-        print("Actions")
+        print("\n    " + self.name)
+        print("    Actions")
         for item in self.actions:
-            print(str(i) + ".", item)
+            print("        " + str(i) + ".", item)
             i += 1
         
     def choose_magic(self):
         i = 1
-        print("Magic")
+        print("    Magic")
         for magic in self.mag:
-            print ("    " + str(i) + ".", magic.name, "(cost:", str(magic.cost) + ")")
+            print ("        " + str(i) + ".", magic.name, "(cost:", str(magic.cost) + ")")
             i += 1
 
     def choose_item(self):
         i = 1
-        print("Items")
+        print("    Items")
         for items in self.items:
-            print("    " + str(i) + ".", items["item"].name, "(" + items["item"].description + ")", "x" + str(items["quantity"]))
+            print("        " + str(i) + ".", items["item"].name, "(" + items["item"].description + ")", "x" + str(items["quantity"]))
             i += 1
+
+    def get_enemy_stats(self):
+        hp_bar = ""
+        hp_bar_length = (self.hp / self.maxhp) * 50
+
+        while hp_bar_length > 0:
+            hp_bar += "█"
+            hp_bar_length -= 1
+        
+        while len(hp_bar) < 50:
+            hp_bar += " "
+
+        hp_string = str(self.hp) + "/" + str(self.maxhp)
+        current_hp = ""
+
+        if len(hp_string) < 7:
+            decreased = 7 - len(hp_string)
+            while decreased > 0:
+                current_hp += " "
+                decreased -= 1
+
+            current_hp += hp_string
+        else:
+            current_hp = hp_string
+        
+        print(self.name + "    " + current_hp + " |" + hp_bar + "|")
+        print("")
+
+    def get_stats(self):
+        hp_bar = ""
+        mp_bar = ""
+        hp_bar_length = (self.hp / self.maxhp) * 25
+        mp_bar_length = (self.mp / self.maxmp) * 10
+        
+        while hp_bar_length > 0:
+            hp_bar += "█"
+            hp_bar_length -= 1
+
+        while len(hp_bar) < 25:
+            hp_bar += " "
+
+        while mp_bar_length > 0:
+            mp_bar += "█"
+            mp_bar_length -= 1
+
+        while len(mp_bar) < 10:
+            mp_bar += " "
+
+        hp_string = str(self.hp) + "/" + str(self.maxhp)
+        current_hp = ""
+
+        if len(hp_string) < 7:
+            decreased = 7 - len(hp_string)
+            while decreased > 0:
+                current_hp += " "
+                decreased -= 1
+
+            current_hp += hp_string
+        else:
+            current_hp = hp_string
+
+        mp_string = str(self.mp) + "/" + str(self.maxmp)
+        current_mp = ""
+
+        if len(mp_string) < 5:
+            decreased = 5 - len(mp_string)
+            while decreased > 0:
+                current_mp += " "
+                decreased -= 1
+            current_mp += mp_string
+        else:
+            current_mp = mp_string
+
+        print(self.name + "    " + current_hp + " |" + hp_bar + "|     " + current_mp + "  |" + mp_bar + "|")
+        print("")
+
+    def choose_target(self, enemies):
+        i = 1
+        print("    Target")
+        for enemy in enemies:
+            if enemy.get_hp() != 0:
+                print("        " + str(i) + ". " + enemy.name)
+                i += 1
+        choice = int(input("    Choose target:")) - 1
+        return choice
+

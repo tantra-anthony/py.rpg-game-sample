@@ -150,3 +150,15 @@ class Person:
         choice = int(input("    Choose target:")) - 1
         return choice
 
+    def choose_enemy_spell(self):
+        magic_choice = random.randrange(0, len(self.mag))
+        enemy_spell = self.mag[magic_choice]
+        magic_dmg = enemy_spell.generate_damage()
+
+        pct = self.hp / self.maxhp * 100
+
+        if self.mp < enemy_spell.cost or enemy_spell.type == "WM" and pct > 50:
+            self.choose_enemy_spell()
+        else:
+            return enemy_spell, magic_dmg
+

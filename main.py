@@ -23,6 +23,7 @@ elixirbomb = Item("Elixir Bomb", "elixir", "Fully restores HP/MP of everyone in 
 grenade = Item("Grenade", "attack", "Deals 70 damage", 70)
 
 player_magic = [blaze, freeze, spark, alterna, heal, medica]
+enemy_magic = [blaze, freeze, heal]
 player_items = [{"item": potion, "quantity": 5},
                 {"item": hipotion, "quantity": 2},
                 {"item": xpotion, "quantity": 1},
@@ -36,9 +37,9 @@ player2 = Person("Dooper :", 500, 90, 40, 30, player_magic, player_items)
 player3 = Person("Clooper:", 500, 90, 40, 30, player_magic, player_items)
 
 # instantiate enemy
-enemy1 = Person("Garuda", 4500, 40, 100, 10, [], [])
-enemy2 = Person("Birb", 1200, 90, 60, 20, [], [])
-enemy3 = Person("Birb", 1200, 90, 60, 20, [], [])
+enemy1 = Person("Garuda", 4500, 40, 100, 10, enemy_magic, [])
+enemy2 = Person("Birb", 1200, 90, 60, 20, enemy_magic, [])
+enemy3 = Person("Birb", 1200, 90, 60, 20, enemy_magic, [])
 
 players = [player1, player2, player3]
 enemies = [enemy1, enemy2, enemy3]
@@ -140,16 +141,7 @@ while running:
                 if enemies[enemy_chosen].get_hp() == 0:
                     print(enemies[enemy_chosen].name.replace(" ", "") + " has been defeated!")
                     del enemies[enemy_chosen]
-
-    enemy_choice = 1
-
-    enemy_dmg = enemies[0].generate_damage()
-    target = random.randrange(0, 3)
-    players[target].take_damage(enemy_dmg)
-    print("Enemy attacks for", enemy_dmg, "damage")
-
-    print("\n*****************************\n")
-
+    
     defeated_enemies = 0
     defeated_players = 0
 
@@ -167,3 +159,24 @@ while running:
     elif defeated_players == 2:
         print("\nYou have been defeated")
         running = False
+
+    for enemy in enemies:
+        enemy_choice = random.randrange(0, 2)
+        if enemy_choice == 0:
+            target = random.randrange(0, 3)
+            enemy_dmg = enemies[0].generate_damage()
+            players[target].take_damage(enemy_dmg)
+            print(enemy.name.replace(" ", '') + " attacks " + players[target].name + " for", enemy_dmg, "damage")
+        elif enemy_choice == 1:
+            spell, magic_dmg = enemy.choose_enemy_spell()
+            enemy.reduce_mp(spell.cost)
+            if spell.type == "WM":
+                enemy.heal(magic_dmg)
+                print("\n" + spell.name + " heals " + enemy.name + " for", str(magic_dmg), "HP\n")
+            elif spell.type == "BM": 
+                target = random.randrange(0, 3)
+                players[target].take_damage(magic_dmg)
+                print(enemy.name + " casts " + spell.name, "deals", magic_dmg, "damage to", players[target].name)
+            
+    print("\n*****************************\n")
+
